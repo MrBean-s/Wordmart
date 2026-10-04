@@ -323,7 +323,7 @@ class ModalSearchForm(forms.Form):
       max_value=30,
       initial=5,
       required=False,
-      widget=forms.NumberInput(attrs={'class': 'form-control'})
+      widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '#'}),
    )
 
    newest_first = forms.BooleanField(
@@ -612,6 +612,7 @@ class CitationForm(forms.Form):
       can_add_img       = kwargs.pop('can_add_img', None)
       is_book           = kwargs.pop('is_book', None)
       existing_img_path = kwargs.pop('existing_img_path', None)
+      definition_choices = kwargs.pop('definition_choices', None)
       super().__init__(*args, **kwargs)
 
       word_widget = self.fields['word'].widget
@@ -629,6 +630,9 @@ class CitationForm(forms.Form):
          self.fields['image_file'].widget.attrs.update({
             'data-img-path': existing_img_path
          })
+      
+      if definition_choices:
+         self.fields['definition_select'].widget.choices = definition_choices
       # # when validation fails the same word is selected
       # if self.is_bound and 'word' in self.data:
       #    submitted_id = self.data.get('word')
@@ -674,10 +678,10 @@ class CitationDelete(forms.Form):
    def save(self):
       delete_example = self.cleaned_data.get('delete_example')
       citation = Citation.objects.get(pk=self.citation_id)
-      if delete_example:
+      if delete_example and hasattr(citation, 'example'):
          citation.example.delete()
-
-      citation.delete()
+      else:
+         citation.delete()
 
 
 

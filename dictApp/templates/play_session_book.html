@@ -418,12 +418,9 @@ updateButtonVisibility();
          $('#wordEditUrl').attr('href', (i, href) => href.replace(/\/word\/\d+/, `/word/${$initialId}`));
          $('#id_example').closest('.row-wrapper').removeClass('unselectable');
          $('.definition-wrapper').removeClass('unselectable');
-         await loadDefinitions($initialId);
-
-         if ($defSelect.val()) {
-            // console.log('initialId',$defSelect.val());
-            $defSelect.val($defSelect.val()).trigger('change');
-         }
+                  
+         const targetDefId = $defSelect.val();
+         await loadDefinitions($initialId, targetDefId);
       } else {
          $wordInput.append($('<option></option>')) //select2.select not fire when use remote source and createTag  #5386
       }
@@ -439,7 +436,7 @@ updateButtonVisibility();
          $defInput.closest('.row-wrapper').toggleClass('unselectable', useSelect);
       }
 
-      async function loadDefinitions(wordId) {
+      async function loadDefinitions(wordId, targetDefId = null) {
          // console.log('loading definitions');
          const url = `${defn_ajax_url}?word_id=${wordId}`;
          try {
@@ -456,6 +453,8 @@ updateButtonVisibility();
                   }).appendTo($defSelect);
                });
                $('<option>', { value: -1, text: 'New definition'}).appendTo($defSelect);
+               if (targetDefId) $defSelect.val(targetDefId).trigger('change');
+
                // console.log('showdefinitionfield in results');
                showDefinitionField(true);
             } else {

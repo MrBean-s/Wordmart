@@ -1076,6 +1076,7 @@ def play_session_cite(request, lang_id, source_id=None, episode_id=None, segment
    else:      
       if citation:
          ex = citation.example
+         def_choices = [(d.id, d.description) for d in ex.definition.word.definitions.all()]
          form = CitationForm(
             ajax_url=ajax_url,
             initial=initial_data,
@@ -1083,7 +1084,8 @@ def play_session_cite(request, lang_id, source_id=None, episode_id=None, segment
             initial_word=ex.definition.word.name,
             can_add_img=can_add_img,
             is_book=is_book,
-            existing_img_path=citation.image.file.url if citation.image and citation.image.file else ''
+            existing_img_path=citation.image.file.url if citation.image and citation.image.file else '',
+            definition_choices=def_choices
          )
       else:
          form = CitationForm(ajax_url=ajax_url, can_add_img=can_add_img, is_book=is_book)
